@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Fuzhou Pulse 是一个基于 HTML、CSS 和 JavaScript 开发的福州城市文旅推荐平台，展示福州景点、美食、城市文化和一日游路线，支持分类筛选、关键词搜索、收藏、详情弹窗和响应式访问。">
+    <meta name="keywords" content="福州, 福州旅游, 福州文旅, 三坊七巷, 上下杭, 福州美食, 城市推荐, 前端项目">
+    <meta name="author" content="Fuzhou Pulse Project">
+    <meta name="theme-color" content="#0b3f3a">
+    <meta property="og:title" content="Fuzhou Pulse｜福州城市文旅推荐平台">
+    <meta property="og:description" content="探索福州景点、美食、城市文化与一日游路线的交互式文旅推荐平台。">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="./assets/images/fuzhou_cover.png">
+    <title>Fuzhou Pulse｜福州城市文旅推荐平台</title>
+    <link rel="icon" href="./assets/images/banyan.png" type="image/png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&family=Noto+Serif+SC:wght@500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+    <header class="banner">
+        <img class="banner-image" src="./assets/images/fuzhou_cover.jpg" alt="福州城市封面">
+        <div class="banner-overlay"></div>
+
+        <div class="hero-grid">
+            <section class="glass-panel hero-copy" aria-label="福州文旅介绍">
+                <p class="eyebrow logo-mark">FUZHOU PULSE</p>
+                <h1>有福之州，幸福之城</h1>
+                <p class="banner-subtitle">
+                    山水入城，古厝成诗。沿着闽江的潮声，遇见坊巷肌理、商埠烟火与一口鲜润温柔的福州味。
+                </p>
+                <div class="banner-actions">
+                    <button id="weatherButton" class="primary-button" type="button">点击查看天气</button>
+                    <a class="secondary-button" href="#cards">开启福州漫游</a>
+                </div>
+            </section>
+
+            <aside class="visitor-card" aria-label="访客计数器">
+                <span class="visitor-label">今日相逢</span>
+                <strong id="visitor-count">加载中</strong>
+                <span class="visitor-caption">位有福之人到访</span>
+            </aside>
+        </div>
+    </header>
+
+    <main class="page-shell">
+        <section class="intro glass-panel">
+            <p class="intro-text">
+                福州的迷人之处，不止于风景，更在于它把千年历史、闽商精神与温润市井藏进了一座看似安静、实则层次丰厚的城。
+            </p>
+        </section>
+
+        <section id="cards">
+            <div class="search-bar">
+                <input id="featuredSearchInput" type="text" placeholder="搜索景点、美食或关键词..." autocomplete="off">
+            </div>
+            <div class="filter-bar" id="featuredFilterBar"></div>
+            <div id="featuredCardsContainer" class="card-grid"></div>
+        </section>
+
+        <section class="route-section glass-panel" id="routeSection" aria-labelledby="routeSectionTitle">
+            <div class="section-heading route-heading">
+                <div>
+                    <p class="section-kicker">FUZHOU ROUTES</p>
+                    <h2 id="routeSectionTitle">一日游路线推荐</h2>
+                </div>
+                <p class="route-section__intro">按不同主题，规划一场轻松又有层次的福州漫游。</p>
+            </div>
+            <div class="route-grid" id="routePlansContainer"></div>
+        </section>
+
+        <section class="city-cards-section glass-panel" aria-labelledby="cityCardsTitle">
+            <div class="section-heading">
+                <p class="section-kicker">FUZHOU IDENTITY</p>
+                <h2 id="cityCardsTitle">福州名片</h2>
+            </div>
+
+            <div id="identityCardsContainer" class="city-card-grid"></div>
+        </section>
+    </main>
+
+    <div id="weatherModal" class="modal" aria-hidden="true">
+        <div class="modal-backdrop" data-close-modal="true"></div>
+        <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="weatherTitle">
+            <button id="closeModalButton" class="modal-close" type="button" aria-label="关闭天气提示">×</button>
+            <p class="modal-label">天气提示</p>
+            <h3 id="weatherTitle">福州出行小贴士</h3>
+            <p>
+                福州常有湿润海风与温和降雨，出门建议备一把轻便雨伞。春秋最适合漫步古厝街区，
+                夏季则更适合傍晚出行。
+            </p>
+        </div>
+    </div>
+
+    <div class="detail-modal" id="detailModal" aria-hidden="true">
+        <div class="detail-modal__overlay" id="detailModalOverlay"></div>
+        <div class="detail-modal__panel" role="dialog" aria-modal="true" aria-labelledby="detailModalTitle">
+            <button class="detail-modal__close" id="detailModalClose" type="button" aria-label="关闭详情弹窗">×</button>
+            <div id="detailModalContent"></div>
+        </div>
+    </div>
+
+    <script src="./js/data.js"></script>
+    <script src="./js/main.js"></script>
+</body>
+</html>
