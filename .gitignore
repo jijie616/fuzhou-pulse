@@ -1,0 +1,39 @@
+# dependencies
+node_modules/
+
+# build artifacts
+*.exe
+*.obj
+*.o
+server.exe
+
+# logs
+*.log
+server_stdout
+server_stderr
+server_port
+server_stdout.txt
+server_stderr.txt
+server_port.txt
+ngrok_stdout.txt
+ngrok_stderr.txt
+cpolar_stdout.txt
+cpolar_stderr.txt
+cloudflared_stdout.txt
+cloudflared_stderr.txt
+
+# runtime data
+web/count.txt
+
+# system files
+.DS_Store
+Thumbs.db
+
+# editor
+.vscode/
+.idea/
+
+# temporary files
+tmp/
+temp/
+*.tmp

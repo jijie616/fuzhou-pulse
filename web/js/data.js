@@ -1,0 +1,242 @@
+const siteInfo = {
+    brand: "FUZHOU PULSE",
+    title: "有福之州，幸福之城",
+    subtitle: "山水入城，古厝成诗。沿着闽江的潮声，遇见坊巷肌理、商埠烟火与一口鲜润温柔的福州味。",
+    intro: "福州的迷人之处，不止于风景，更在于它把千年历史、闽商精神与温润市井藏进了一座看似安静、实则层次丰厚的城。",
+    heroImage: "./assets/images/fuzhou_cover.png",
+    primaryAction: "点击查看天气",
+    secondaryAction: "开启福州漫游"
+};
+
+const travelStats = {
+    todayMeet: 0,
+    label: "位有福之人到访",
+    loadingText: "加载中"
+};
+
+const featuredCards = [
+    {
+        id: "sanfang",
+        tag: "古城名片",
+        title: "三坊七巷",
+        subtitle: "里坊制度的活化石",
+        description: "白墙黛瓦与深宅古厝构成了福州最经典的城市记忆。这里保留了中国古代里坊制度的空间脉络，也是读懂福州士人气质、家族文化与生活美学的一把钥匙。",
+        image: "./assets/images/sanfang.png",
+        alt: "三坊七巷古厝街景",
+        category: "history",
+        detail: {
+            bestTime: "建议游玩 2-3 小时",
+            location: "福州市鼓楼区南后街一带",
+            reason: "这里适合感受福州古城肌理、坊巷格局与传统建筑美学。",
+            tips: "建议上午或傍晚前往，光线柔和，适合拍摄白墙黛瓦与巷口光影。"
+        }
+    },
+    {
+        id: "yushan",
+        tag: "城中山色",
+        title: "于山",
+        subtitle: "闹市里的千年文脉",
+        description: "于山不高，却藏着福州城的清雅气质。摩崖石刻、古树亭台与城中烟火相互映照，适合在慢步之间感受古城的书卷气。",
+        image: "./assets/images/yushan.png",
+        alt: "于山古迹与绿意",
+        category: "history",
+        detail: {
+            bestTime: "建议游玩 1-2 小时",
+            location: "福州市鼓楼区于山路",
+            reason: "这里把城中山色、古迹碑刻与榕城慢生活自然连在一起。",
+            tips: "山路不算陡，适合轻装步行；雨后绿意更浓，但注意台阶湿滑。"
+        }
+    },
+    {
+        id: "linzexu",
+        tag: "名人故里",
+        title: "林则徐纪念馆",
+        subtitle: "家国精神的城市注脚",
+        description: "从展陈、院落到一方静雅庭院，这里记录着林则徐的清廉风骨与开眼看世界的胸襟，也让福州的历史记忆更有力量。",
+        image: "./assets/images/linzexu.png",
+        alt: "林则徐纪念馆建筑",
+        category: "history",
+        detail: {
+            bestTime: "建议游玩 1-1.5 小时",
+            location: "福州市鼓楼区澳门路",
+            reason: "这里适合了解林则徐生平与福州士人的家国情怀。",
+            tips: "可与三坊七巷串联游览，动线紧凑，也更容易读懂老城文脉。"
+        }
+    },
+    {
+        id: "shangxiahang",
+        tag: "闽商往事",
+        title: "上下杭",
+        subtitle: "闽商文化的发祥地",
+        description: "曾经的商贸码头，如今成了最能体现福州旧城新生的街区之一。青石路、老骑楼与沿河灯影交织，把闽江商埠的繁华记忆与当代夜游氛围自然衔接在一起。",
+        image: "./assets/images/shangxiahang.png",
+        alt: "上下杭历史街区风貌",
+        category: "culture",
+        detail: {
+            bestTime: "建议游玩 2 小时",
+            location: "福州市台江区上下杭历史文化街区",
+            reason: "这里适合感受闽商文化、码头记忆与老街更新后的夜游氛围。",
+            tips: "傍晚到夜间最有氛围，沿河慢走可以看到街灯与骑楼层次。"
+        }
+    },
+    {
+        id: "yantaishan",
+        tag: "山海洋楼",
+        title: "烟台山",
+        subtitle: "近代建筑与青年生活的交汇",
+        description: "坡巷、洋楼、咖啡香与榕荫在这里叠在一起。烟台山把福州开放包容的一面铺展开来，也让老城生长出新的浪漫。",
+        image: "./assets/images/yantaishan.png",
+        alt: "烟台山历史风貌区",
+        category: "culture",
+        detail: {
+            bestTime: "建议游玩 2-3 小时",
+            location: "福州市仓山区烟台山历史风貌区",
+            reason: "这里适合看近代建筑、坡地街巷与青年文化空间的融合。",
+            tips: "坡道较多，建议穿舒适鞋；午后到黄昏适合拍摄洋楼和街角光影。"
+        }
+    },
+    {
+        id: "zhongzhoudao",
+        tag: "闽江灯影",
+        title: "中洲岛",
+        subtitle: "江心地标的城市夜色",
+        description: "中洲岛静卧闽江之上，见证水运商贸与城市更新。夜幕降临时，江风、灯影与沿岸建筑共同勾勒福州的现代轮廓。",
+        image: "./assets/images/zhongzhoudao.png",
+        alt: "中洲岛与闽江夜色",
+        category: "culture",
+        detail: {
+            bestTime: "建议游玩 1-2 小时",
+            location: "福州市台江区闽江中洲岛",
+            reason: "这里适合从江面视角感受福州商贸记忆与城市夜色。",
+            tips: "夜景更出片，江边风较明显，秋冬夜游建议多带一件外套。"
+        }
+    },
+    {
+        id: "yuwan",
+        tag: "舌尖福州",
+        title: "福州鱼丸",
+        subtitle: "一口弹嫩鲜润的市井温度",
+        description: "福州味道讲究鲜、柔、润。鱼丸外皮弹嫩、内馅鲜香，从街边热汤到家常餐桌，都能让人感受到这座城市对“鲜”的执着。",
+        image: "./assets/images/yuwan.png",
+        alt: "福州传统美食鱼丸",
+        category: "food",
+        detail: {
+            bestTime: "适合早餐或午后小食",
+            location: "福州老字号小吃店与街巷汤铺",
+            reason: "鱼丸是福州味道里最日常也最鲜活的一口，弹嫩中带着汤香。",
+            tips: "趁热吃最能感受汤底清鲜，也可以搭配锅边或拌面一起尝。"
+        }
+    },
+    {
+        id: "rouyan",
+        tag: "细味风华",
+        title: "肉燕",
+        subtitle: "薄韧如燕的手作功夫",
+        description: "肉燕以肉为皮，薄而有韧，入口轻巧却回味绵长。它藏着福州人对精细手艺的讲究，也藏着一碗热汤里的待客心意。",
+        image: "./assets/images/rouyan.png",
+        alt: "福州肉燕",
+        category: "food",
+        detail: {
+            bestTime: "适合早餐、夜宵或轻食",
+            location: "福州传统小吃店",
+            reason: "肉燕体现了福州饮食对细腻口感和手作功夫的追求。",
+            tips: "可点一碗肉燕汤慢慢尝，感受燕皮的薄韧和汤头的温润。"
+        }
+    },
+    {
+        id: "fotiaoqiang",
+        tag: "宴席名菜",
+        title: "佛跳墙",
+        subtitle: "山海珍味汇成一坛醇香",
+        description: "佛跳墙层次丰厚、香气沉稳，是福州菜华丽而内敛的一面。慢火煨出的鲜香，把闽都宴席的郑重与体面浓缩其中。",
+        image: "./assets/images/fotiaoqiang.png",
+        alt: "佛跳墙传统闽菜",
+        category: "food",
+        detail: {
+            bestTime: "适合正餐或宴席体验",
+            location: "福州闽菜餐厅",
+            reason: "佛跳墙汇聚山海珍味，是闽菜中最具仪式感的代表之一。",
+            tips: "建议提前预订，慢慢品尝汤香层次；多人同行更适合点一坛共享。"
+        }
+    }
+];
+
+const identityCards = [
+    {
+        id: "alley-spirit",
+        englishTitle: "The Alley Spirit",
+        title: "坊巷精神",
+        description: "白墙黛瓦下的家国同构，从里坊风骨中沉淀出的家族责任与人文温润。",
+        image: "./assets/images/alley.png",
+        alt: "坊巷精神视觉资产"
+    },
+    {
+        id: "flavor-grace",
+        englishTitle: "The Flavor Grace",
+        title: "细味风华",
+        description: "薄韧如燕、温润如汤，是对精细与完美的工匠追求，更是福州饮食中细腻入微的待客之道。",
+        image: "./assets/images/flavor.png",
+        alt: "细味风华视觉资产"
+    },
+    {
+        id: "banyan-spirit",
+        englishTitle: "The Banyan Spirit",
+        title: "榕树精神",
+        description: "枝叶舒展、根系坚韧，像这座城市一样包容、沉稳，也始终向着新生长。",
+        image: "./assets/images/banyan.png",
+        alt: "榕树精神视觉资产"
+    }
+];
+
+const routePlans = [
+    {
+        id: "history-route",
+        title: "历史古城半日线",
+        subtitle: "从坊巷肌理读懂福州古城",
+        theme: "历史古城",
+        duration: "约 4-5 小时",
+        stops: ["三坊七巷", "林则徐纪念馆", "于山"],
+        description: "适合第一次来福州的人，从古城街巷、人文纪念馆到山城景观，感受福州历史脉络。",
+        tips: "建议上午出发，步行与短途打车结合，午后留一点时间在老街喝茶。"
+    },
+    {
+        id: "culture-route",
+        title: "闽商文化一日线",
+        subtitle: "沿着闽江读懂商埠往事",
+        theme: "闽商文化",
+        duration: "约 5-6 小时",
+        stops: ["上下杭", "中洲岛", "烟台山"],
+        description: "从台江老商埠到江心灯影，再到仓山坡巷洋楼，串起福州近代开放与商业文明的侧影。",
+        tips: "建议下午开始，傍晚抵达江边和烟台山，夜色会让路线更有层次。"
+    },
+    {
+        id: "food-route",
+        title: "福州美食慢游线",
+        subtitle: "用一日三餐尝出榕城鲜味",
+        theme: "福州美食",
+        duration: "约 3-4 小时",
+        stops: ["福州鱼丸", "肉燕", "佛跳墙"],
+        description: "从街巷小吃到闽菜宴席，循着鲜、柔、润的味觉线索，体验福州饮食的细腻与体面。",
+        tips: "小吃适合分量少量多尝，佛跳墙建议提前预订，并安排在正餐时段慢慢品。"
+    }
+];
+
+const fuzhouSpots = featuredCards.filter(function (card) {
+    return card.category === "history" || card.category === "culture";
+});
+
+const fuzhouFoods = featuredCards.filter(function (card) {
+    return card.category === "food";
+});
+
+const fuzhouCards = identityCards;
+
+// 后续这里会存放景点、美食、城市名片等数据，并逐步驱动页面动态渲染。
+window.siteInfo = siteInfo;
+window.travelStats = travelStats;
+window.featuredCards = featuredCards;
+window.identityCards = identityCards;
+window.routePlans = routePlans;
+window.fuzhouSpots = fuzhouSpots;
+window.fuzhouFoods = fuzhouFoods;
+window.fuzhouCards = fuzhouCards;
