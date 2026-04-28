@@ -17,6 +17,7 @@ const categoryFilters = [
 const favoriteStorageKey = "fuzhou_favorite_cards";
 let currentFilter = "all";
 let currentSearchKeyword = "";
+let activeFeaturedCards = Array.isArray(window.featuredCards) ? window.featuredCards : [];
 
 function openWeatherModal() {
     weatherModal.classList.add("is-open");
@@ -78,7 +79,29 @@ function showEmptyState(container, message) {
 }
 
 function getFeaturedCards() {
-    return Array.isArray(window.featuredCards) ? window.featuredCards : [];
+    return Array.isArray(activeFeaturedCards) ? activeFeaturedCards : [];
+}
+
+async function loadFeaturedCardsFromBackend() {
+    const fallbackCards = Array.isArray(window.featuredCards) ? window.featuredCards : [];
+
+    try {
+        const response = await fetch("http://localhost:3000/api/featured-cards");
+        if (!response.ok) {
+            throw new Error("Failed to load featured cards from backend");
+        }
+
+        const result = await response.json();
+        if (result && result.ok === true && Array.isArray(result.data)) {
+            activeFeaturedCards = result.data;
+            return;
+        }
+
+        throw new Error("Invalid featured cards response");
+    } catch (error) {
+        console.warn("Backend featured cards unavailable, using local data.", error);
+        activeFeaturedCards = fallbackCards;
+    }
 }
 
 function findFeaturedCard(cardId) {
@@ -581,7 +604,8 @@ document.addEventListener("keydown", function (event) {
     }
 });
 
-window.addEventListener("DOMContentLoaded", function () {
+window.addEventListener("DOMContentLoaded", async function () {
+    await loadFeaturedCardsFromBackend();
     renderFilterButtons();
     filterFeaturedCards("all");
     renderRoutePlans();
