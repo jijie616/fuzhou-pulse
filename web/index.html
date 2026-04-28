@@ -70,6 +70,25 @@
             <div class="route-grid" id="routePlansContainer"></div>
         </section>
 
+        <section class="feedback-section glass-panel" id="feedbackSection" aria-labelledby="feedbackSectionTitle">
+            <div class="section-heading feedback-heading">
+                <div>
+                    <p class="section-kicker">FUZHOU VOICE</p>
+                    <h2 id="feedbackSectionTitle">游客留言</h2>
+                </div>
+                <p class="feedback-section__intro">留下你对福州旅行路线、城市印象或页面体验的想法。</p>
+            </div>
+
+            <form class="feedback-form" id="feedbackForm">
+                <input id="feedbackNickname" type="text" placeholder="你的昵称（可选）" autocomplete="nickname">
+                <textarea id="feedbackContent" placeholder="写下你的留言或建议..." maxlength="200"></textarea>
+                <button type="submit">提交留言</button>
+                <p class="feedback-message" id="feedbackMessage"></p>
+            </form>
+
+            <div class="feedback-list" id="feedbackList"></div>
+        </section>
+
         <section class="city-cards-section glass-panel" aria-labelledby="cityCardsTitle">
             <div class="section-heading">
                 <p class="section-kicker">FUZHOU IDENTITY</p>

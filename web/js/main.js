@@ -7,6 +7,12 @@ const detailModalOverlay = document.getElementById("detailModalOverlay");
 const detailModalClose = document.getElementById("detailModalClose");
 const detailModalContent = document.getElementById("detailModalContent");
 const featuredSearchInput = document.getElementById("featuredSearchInput");
+const feedbackForm = document.getElementById("feedbackForm");
+const feedbackNicknameInput = document.getElementById("feedbackNickname");
+const feedbackContentInput = document.getElementById("feedbackContent");
+const feedbackMessage = document.getElementById("feedbackMessage");
+const feedbackList = document.getElementById("feedbackList");
+const FEEDBACK_API_URL = "http://localhost:3000/api/feedbacks";
 const categoryFilters = [
     { label: "全部", value: "all" },
     { label: "历史古城", value: "history" },
@@ -128,6 +134,141 @@ async function loadRoutePlansFromBackend() {
     } catch (error) {
         console.warn("Backend route plans unavailable, using local route data.", error);
         activeRoutePlans = fallbackRoutes;
+    }
+}
+
+function setFeedbackMessage(message, type) {
+    if (!feedbackMessage) {
+        return;
+    }
+
+    feedbackMessage.textContent = message || "";
+    feedbackMessage.classList.remove("is-success", "is-error", "is-muted");
+
+    if (type) {
+        feedbackMessage.classList.add("is-" + type);
+    }
+}
+
+function formatFeedbackTime(value) {
+    if (!value) {
+        return "刚刚";
+    }
+
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) {
+        return "刚刚";
+    }
+
+    return date.toLocaleString("zh-CN", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit"
+    });
+}
+
+function renderFeedbacks(feedbacks) {
+    if (!feedbackList) {
+        return;
+    }
+
+    feedbackList.innerHTML = "";
+    const safeFeedbacks = Array.isArray(feedbacks) ? feedbacks : [];
+    if (safeFeedbacks.length === 0) {
+        showEmptyState(feedbackList, "还没有留言，期待你的第一条福州印象。");
+        return;
+    }
+
+    safeFeedbacks.slice().reverse().forEach(function (feedback) {
+        const item = document.createElement("article");
+        item.className = "feedback-item";
+
+        const meta = document.createElement("div");
+        meta.className = "feedback-item__meta";
+        meta.appendChild(createTextElement("strong", "", feedback.nickname || "游客"));
+        meta.appendChild(createTextElement("time", "", formatFeedbackTime(feedback.createdAt)));
+
+        item.appendChild(meta);
+        item.appendChild(createTextElement("p", "feedback-item__content", feedback.content || ""));
+        feedbackList.appendChild(item);
+    });
+}
+
+async function loadFeedbacks() {
+    if (!feedbackList) {
+        return;
+    }
+
+    try {
+        const response = await fetch(FEEDBACK_API_URL);
+        if (!response.ok) {
+            throw new Error("Failed to load feedbacks");
+        }
+
+        const result = await response.json();
+        if (result && result.ok === true && Array.isArray(result.data)) {
+            renderFeedbacks(result.data);
+            return;
+        }
+
+        throw new Error("Invalid feedbacks response");
+    } catch (error) {
+        console.warn("Feedback service unavailable.", error);
+        feedbackList.innerHTML = "";
+        showEmptyState(feedbackList, "留言服务暂时不可用，本地展示功能不受影响。");
+        setFeedbackMessage("留言服务暂时不可用，本地展示功能不受影响。", "muted");
+    }
+}
+
+async function submitFeedback(event) {
+    event.preventDefault();
+
+    const nickname = feedbackNicknameInput ? feedbackNicknameInput.value.trim() : "";
+    const content = feedbackContentInput ? feedbackContentInput.value.trim() : "";
+
+    if (!content) {
+        setFeedbackMessage("反馈内容不能为空", "error");
+        return;
+    }
+
+    if (content.length > 200) {
+        setFeedbackMessage("反馈内容不能超过 200 字", "error");
+        return;
+    }
+
+    try {
+        const response = await fetch(FEEDBACK_API_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                nickname,
+                content
+            })
+        });
+        const result = await response.json();
+
+        if (!response.ok) {
+            setFeedbackMessage(result.message || "留言提交失败", "error");
+            return;
+        }
+
+        if (result && result.ok === true) {
+            if (feedbackContentInput) {
+                feedbackContentInput.value = "";
+            }
+            setFeedbackMessage("留言提交成功", "success");
+            await loadFeedbacks();
+            return;
+        }
+
+        setFeedbackMessage("留言提交失败", "error");
+    } catch (error) {
+        console.warn("Feedback submit failed.", error);
+        setFeedbackMessage("留言服务暂时不可用，请稍后再试", "error");
     }
 }
 
@@ -632,9 +773,14 @@ document.addEventListener("keydown", function (event) {
 });
 
 window.addEventListener("DOMContentLoaded", async function () {
+    if (feedbackForm) {
+        feedbackForm.addEventListener("submit", submitFeedback);
+    }
+
     await Promise.all([
         loadFeaturedCardsFromBackend(),
-        loadRoutePlansFromBackend()
+        loadRoutePlansFromBackend(),
+        loadFeedbacks()
     ]);
     renderFilterButtons();
     filterFeaturedCards("all");
