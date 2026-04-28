@@ -2,7 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const featuredCards = require("./data/featuredCards");
 const routePlans = require("./data/routePlans");
-const feedbacks = require("./data/feedbacks");
+const { readFeedbacks, addFeedback } = require("./data/feedbacks");
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -34,6 +34,8 @@ app.get("/api/routes", function (req, res) {
 });
 
 app.get("/api/feedbacks", function (req, res) {
+    const feedbacks = readFeedbacks();
+
     res.json({
         ok: true,
         count: feedbacks.length,
@@ -67,7 +69,7 @@ app.post("/api/feedbacks", function (req, res) {
         createdAt: new Date().toISOString()
     };
 
-    feedbacks.push(feedback);
+    addFeedback(feedback);
 
     return res.json({
         ok: true,
