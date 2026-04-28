@@ -18,6 +18,7 @@ const favoriteStorageKey = "fuzhou_favorite_cards";
 let currentFilter = "all";
 let currentSearchKeyword = "";
 let activeFeaturedCards = Array.isArray(window.featuredCards) ? window.featuredCards : [];
+let activeRoutePlans = Array.isArray(window.routePlans) ? window.routePlans : [];
 
 function openWeatherModal() {
     weatherModal.classList.add("is-open");
@@ -82,6 +83,10 @@ function getFeaturedCards() {
     return Array.isArray(activeFeaturedCards) ? activeFeaturedCards : [];
 }
 
+function getRoutePlans() {
+    return Array.isArray(activeRoutePlans) ? activeRoutePlans : [];
+}
+
 async function loadFeaturedCardsFromBackend() {
     const fallbackCards = Array.isArray(window.featuredCards) ? window.featuredCards : [];
 
@@ -101,6 +106,28 @@ async function loadFeaturedCardsFromBackend() {
     } catch (error) {
         console.warn("Backend featured cards unavailable, using local data.", error);
         activeFeaturedCards = fallbackCards;
+    }
+}
+
+async function loadRoutePlansFromBackend() {
+    const fallbackRoutes = Array.isArray(window.routePlans) ? window.routePlans : [];
+
+    try {
+        const response = await fetch("http://localhost:3000/api/routes");
+        if (!response.ok) {
+            throw new Error("Failed to load route plans from backend");
+        }
+
+        const result = await response.json();
+        if (result && result.ok === true && Array.isArray(result.data)) {
+            activeRoutePlans = result.data;
+            return;
+        }
+
+        throw new Error("Invalid route plans response");
+    } catch (error) {
+        console.warn("Backend route plans unavailable, using local route data.", error);
+        activeRoutePlans = fallbackRoutes;
     }
 }
 
@@ -485,7 +512,7 @@ function renderRoutePlans() {
     }
 
     container.innerHTML = "";
-    const plans = Array.isArray(window.routePlans) ? window.routePlans : [];
+    const plans = getRoutePlans();
     if (plans.length === 0) {
         showEmptyState(container, "暂无路线推荐");
         return;
@@ -605,7 +632,10 @@ document.addEventListener("keydown", function (event) {
 });
 
 window.addEventListener("DOMContentLoaded", async function () {
-    await loadFeaturedCardsFromBackend();
+    await Promise.all([
+        loadFeaturedCardsFromBackend(),
+        loadRoutePlansFromBackend()
+    ]);
     renderFilterButtons();
     filterFeaturedCards("all");
     renderRoutePlans();
