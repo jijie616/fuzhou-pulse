@@ -64,6 +64,21 @@ function generateMockTripPlan(options) {
     };
 }
 
+async function generateTripPlan(options) {
+    const provider = process.env.AI_PROVIDER || "mock";
+
+    if (provider === "mock") {
+        return generateMockTripPlan(options);
+    }
+
+    return {
+        ...generateMockTripPlan(options),
+        summary: "当前未配置真实 AI 服务，已使用模拟推荐结果。",
+        isMock: true
+    };
+}
+
 module.exports = {
+    generateTripPlan,
     generateMockTripPlan
 };

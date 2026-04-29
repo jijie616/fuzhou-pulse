@@ -5,7 +5,7 @@ const cors = require("cors");
 const featuredCards = require("./data/featuredCards");
 const routePlans = require("./data/routePlans");
 const { readFeedbacks, addFeedback } = require("./data/feedbacks");
-const { generateMockTripPlan } = require("./services/tripPlannerService");
+const { generateTripPlan } = require("./services/tripPlannerService");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -90,7 +90,7 @@ app.post("/api/feedbacks", function (req, res) {
     });
 });
 
-app.post("/api/ai/trip-plan", function (req, res) {
+app.post("/api/ai/trip-plan", async function (req, res) {
     const body = req.body || {};
     const days = normalizeTripDays(body.days);
     const interest = String(body.interest || "").trim() || "综合";
@@ -103,14 +103,16 @@ app.post("/api/ai/trip-plan", function (req, res) {
         });
     }
 
+    const tripPlan = await generateTripPlan({
+        days,
+        interest,
+        pace
+    });
+
     return res.json({
         ok: true,
         message: "已生成福州行程推荐",
-        data: generateMockTripPlan({
-            days,
-            interest,
-            pace
-        })
+        data: tripPlan
     });
 });
 
