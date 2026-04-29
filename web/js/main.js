@@ -12,7 +12,10 @@ const feedbackNicknameInput = document.getElementById("feedbackNickname");
 const feedbackContentInput = document.getElementById("feedbackContent");
 const feedbackMessage = document.getElementById("feedbackMessage");
 const feedbackList = document.getElementById("feedbackList");
-const FEEDBACK_API_URL = "http://localhost:3000/api/feedbacks";
+const API_BASE_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+    ? "http://localhost:3000"
+    : "";
+const FEEDBACK_API_URL = API_BASE_URL + "/api/feedbacks";
 const aiTripForm = document.getElementById("aiTripForm");
 const aiTripDaysSelect = document.getElementById("aiTripDays");
 const aiTripInterestSelect = document.getElementById("aiTripInterest");
@@ -20,7 +23,7 @@ const aiTripPaceSelect = document.getElementById("aiTripPace");
 const aiTripUserPreferenceInput = document.getElementById("aiTripUserPreference");
 const aiTripMessage = document.getElementById("aiTripMessage");
 const aiTripResult = document.getElementById("aiTripResult");
-const AI_TRIP_API_URL = "http://localhost:3000/api/ai/trip-plan";
+const AI_TRIP_API_URL = API_BASE_URL + "/api/ai/trip-plan";
 const categoryFilters = [
     { label: "全部", value: "all" },
     { label: "历史古城", value: "history" },
@@ -105,7 +108,7 @@ async function loadFeaturedCardsFromBackend() {
     const fallbackCards = Array.isArray(window.featuredCards) ? window.featuredCards : [];
 
     try {
-        const response = await fetch("http://localhost:3000/api/featured-cards");
+        const response = await fetch(API_BASE_URL + "/api/featured-cards");
         if (!response.ok) {
             throw new Error("Failed to load featured cards from backend");
         }
@@ -127,7 +130,7 @@ async function loadRoutePlansFromBackend() {
     const fallbackRoutes = Array.isArray(window.routePlans) ? window.routePlans : [];
 
     try {
-        const response = await fetch("http://localhost:3000/api/routes");
+        const response = await fetch(API_BASE_URL + "/api/routes");
         if (!response.ok) {
             throw new Error("Failed to load route plans from backend");
         }

@@ -1,5 +1,6 @@
 require("dotenv").config();
 
+const path = require("path");
 const express = require("express");
 const cors = require("cors");
 const featuredCards = require("./data/featuredCards");
@@ -125,6 +126,15 @@ app.post("/api/ai/trip-plan", async function (req, res) {
         message: "已生成福州行程推荐",
         data: tripPlan
     });
+});
+
+const webRoot = path.join(__dirname, "..", "web");
+app.use(express.static(webRoot));
+app.use(function (req, res) {
+    if (req.path.startsWith("/api/")) {
+        return res.status(404).json({ ok: false, message: "API route not found" });
+    }
+    res.sendFile(path.join(webRoot, "index.html"));
 });
 
 app.listen(PORT, function () {
