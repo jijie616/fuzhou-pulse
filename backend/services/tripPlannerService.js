@@ -1,4 +1,81 @@
 const OpenAI = require("openai");
+const featuredCards = require("../data/featuredCards");
+
+function buildTravelDataContext() {
+    if (!Array.isArray(featuredCards) || featuredCards.length === 0) {
+        return "项目暂无可参考的文旅推荐卡片，请基于福州通用旅行经验生成，但不要编造过多地点。";
+    }
+
+    const travelData = featuredCards.map(function (card) {
+        const detail = card.detail || {};
+
+        return {
+            id: card.id,
+            title: card.title,
+            category: card.category,
+            tag: card.tag,
+            subtitle: card.subtitle,
+            description: card.description,
+            bestTime: detail.bestTime,
+            location: detail.location,
+            reason: detail.reason,
+            tips: detail.tips
+        };
+    });
+
+    return JSON.stringify(travelData);
+}
+
+function normalizeRelatedPlaces(places) {
+    if (!Array.isArray(places)) {
+        return [];
+    }
+
+    return places
+        .filter(function (place) {
+            return place && (place.id || place.title);
+        })
+        .slice(0, 6)
+        .map(function (place) {
+            return {
+                id: place.id || "",
+                title: place.title || "",
+                reason: place.reason || "与本次行程偏好相关。"
+            };
+        });
+}
+
+function pickRelatedPlaces(interest) {
+    let preferredCategory = "";
+    if (interest.indexOf("美食") !== -1) {
+        preferredCategory = "food";
+    } else if (interest.indexOf("历史") !== -1) {
+        preferredCategory = "history";
+    } else if (interest.indexOf("文化") !== -1) {
+        preferredCategory = "culture";
+    }
+
+    const preferredCards = preferredCategory
+        ? featuredCards.filter(function (card) {
+            return card.category === preferredCategory;
+        })
+        : featuredCards;
+
+    const fallbackCards = featuredCards.filter(function (card) {
+        return preferredCards.indexOf(card) === -1;
+    });
+
+    return preferredCards
+        .concat(fallbackCards)
+        .slice(0, 5)
+        .map(function (card) {
+            return {
+                id: card.id,
+                title: card.title,
+                reason: card.detail && card.detail.reason ? card.detail.reason : "适合作为本次福州行程参考。"
+            };
+        });
+}
 
 function buildDailyPlan(days, basePlan) {
     if (days === 1) {
@@ -64,6 +141,7 @@ function generateMockTripPlan(options) {
         userPreference: userPreference,
         requestSummary: userPreference ? "已参考你的补充需求：" + userPreference : "",
         isMock: true,
+        relatedPlaces: pickRelatedPlaces(interest),
         plan: buildDailyPlan(days, basePlan),
         tips: "当前为规则生成的模拟 AI 行程，后续可接入真实模型，让推荐更个性化。" + (userPreference ? " 补充需求会作为路线松紧、拍照、美食和同行人安排的参考。" : "")
     };
@@ -90,6 +168,7 @@ function normalizeAiTripPlan(parsedPlan, options) {
         pace: parsedPlan.pace || options.pace,
         userPreference: parsedPlan.userPreference || userPreference,
         requestSummary: parsedPlan.requestSummary || (userPreference ? "已参考你的补充需求：" + userPreference : ""),
+        relatedPlaces: normalizeRelatedPlaces(parsedPlan.relatedPlaces),
         plan: Array.isArray(parsedPlan.plan) ? parsedPlan.plan : [],
         tips: parsedPlan.tips || "建议根据当天交通、天气和体力情况灵活调整。",
         isMock: false
@@ -101,6 +180,7 @@ async function generateDeepSeekTripPlan(options) {
     const baseURL = process.env.DEEPSEEK_BASE_URL || "https://api.deepseek.com";
     const model = process.env.AI_MODEL || "deepseek-v4-flash";
     const userPreference = typeof options.userPreference === "string" ? options.userPreference.trim() : "";
+    const travelDataContext = buildTravelDataContext();
 
     if (!apiKey) {
         return createFallbackTripPlan(options, "当前未配置 DeepSeek API Key，已使用模拟推荐。");
@@ -120,8 +200,11 @@ async function generateDeepSeekTripPlan(options) {
                     content: [
                         "你是福州城市文旅行程规划助手。",
                         "请根据用户提供的游玩天数、兴趣偏好和旅行节奏，生成适合福州旅行的行程建议。",
+                        "你必须优先参考“项目已有文旅数据”中的景点、美食和文化地点。",
+                        "尽量不要凭空编造项目中不存在的地点；如果确实需要补充项目外地点，只能少量补充，并且整体仍以项目已有数据为主。",
                         "必须只返回 JSON 对象，不要返回 Markdown，不要返回解释性文字。",
-                        "JSON 字段必须包含 title、summary、days、interest、pace、userPreference、requestSummary、plan、tips、isMock。",
+                        "JSON 字段必须包含 title、summary、days、interest、pace、userPreference、requestSummary、plan、tips、isMock、relatedPlaces。",
+                        "relatedPlaces 必须是数组，建议 3-6 个，尽量使用项目已有文旅数据中的 id 和 title，并说明推荐理由。",
                         "plan 必须是字符串数组，适合直接展示在网页中。",
                         "isMock 必须为 false。",
                         userPreference
@@ -136,6 +219,7 @@ async function generateDeepSeekTripPlan(options) {
                         interest: options.interest,
                         pace: options.pace,
                         userPreference: userPreference,
+                        travelDataContext: travelDataContext,
                         outputExample: {
                             title: "福州一日游标题",
                             summary: "简短总结",
@@ -144,6 +228,13 @@ async function generateDeepSeekTripPlan(options) {
                             pace: "轻松",
                             userPreference: userPreference,
                             requestSummary: "用户希望路线轻松，适合和父母同行。",
+                            relatedPlaces: [
+                                {
+                                    id: "gushan",
+                                    title: "鼓山",
+                                    reason: "适合历史与自然结合的行程"
+                                }
+                            ],
                             plan: [
                                 "上午：...",
                                 "中午：...",
@@ -189,6 +280,7 @@ async function generateTripPlan(options) {
 }
 
 module.exports = {
+    buildTravelDataContext,
     generateTripPlan,
     generateMockTripPlan,
     generateDeepSeekTripPlan

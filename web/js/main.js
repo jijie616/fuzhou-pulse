@@ -346,6 +346,34 @@ function renderAiTripPlan(planData) {
     }
     card.appendChild(planList);
 
+    const relatedPlaces = Array.isArray(planData.relatedPlaces) ? planData.relatedPlaces : [];
+    if (relatedPlaces.length > 0) {
+        const relatedSection = document.createElement("div");
+        relatedSection.className = "ai-trip-related";
+        relatedSection.appendChild(createTextElement("h4", "", "参考地点"));
+
+        const relatedList = document.createElement("div");
+        relatedList.className = "ai-trip-related__list";
+        relatedPlaces.forEach(function (place) {
+            if (!place || (!place.title && !place.reason)) {
+                return;
+            }
+
+            const relatedItem = document.createElement("article");
+            relatedItem.className = "ai-trip-related__item";
+            relatedItem.appendChild(createTextElement("strong", "", place.title || "推荐地点"));
+            if (place.reason) {
+                relatedItem.appendChild(createTextElement("span", "", place.reason));
+            }
+            relatedList.appendChild(relatedItem);
+        });
+
+        if (relatedList.children.length > 0) {
+            relatedSection.appendChild(relatedList);
+            card.appendChild(relatedSection);
+        }
+    }
+
     const tips = document.createElement("p");
     tips.className = "ai-trip-tips";
     tips.appendChild(createTextElement("strong", "", "小提示："));

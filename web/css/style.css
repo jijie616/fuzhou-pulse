@@ -1233,6 +1233,43 @@ img {
     line-height: 1.7;
 }
 
+.ai-trip-related {
+    margin-top: 18px;
+}
+
+.ai-trip-related h4 {
+    margin: 0 0 10px;
+    color: var(--wall-gray);
+    font-size: 0.98rem;
+}
+
+.ai-trip-related__list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+}
+
+.ai-trip-related__item {
+    display: grid;
+    gap: 6px;
+    min-width: 0;
+    padding: 12px 14px;
+    border: 1px solid rgba(15, 159, 122, 0.16);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.62);
+}
+
+.ai-trip-related__item strong {
+    color: var(--banyan-green-deep);
+    font-size: 0.95rem;
+}
+
+.ai-trip-related__item span {
+    color: var(--wall-gray-soft);
+    font-size: 0.86rem;
+    line-height: 1.65;
+}
+
 .ai-trip-tips {
     margin: 16px 0 0;
     color: var(--wall-gray-soft);
