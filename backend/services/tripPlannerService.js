@@ -1,3 +1,5 @@
+const OpenAI = require("openai");
+
 function buildDailyPlan(days, basePlan) {
     if (days === 1) {
         return basePlan;
@@ -64,21 +66,116 @@ function generateMockTripPlan(options) {
     };
 }
 
-async function generateTripPlan(options) {
-    const provider = process.env.AI_PROVIDER || "mock";
-
-    if (provider === "mock") {
-        return generateMockTripPlan(options);
-    }
+function createFallbackTripPlan(options, reason) {
+    const fallbackPlan = generateMockTripPlan(options);
 
     return {
-        ...generateMockTripPlan(options),
-        summary: "当前未配置真实 AI 服务，已使用模拟推荐结果。",
+        ...fallbackPlan,
+        summary: reason,
         isMock: true
     };
 }
 
+function normalizeAiTripPlan(parsedPlan, options) {
+    return {
+        title: parsedPlan.title || "福州 AI 行程推荐",
+        summary: parsedPlan.summary || "根据你的偏好生成了一份福州行程建议。",
+        days: Number(parsedPlan.days) || options.days,
+        interest: parsedPlan.interest || options.interest,
+        pace: parsedPlan.pace || options.pace,
+        plan: Array.isArray(parsedPlan.plan) ? parsedPlan.plan : [],
+        tips: parsedPlan.tips || "建议根据当天交通、天气和体力情况灵活调整。",
+        isMock: false
+    };
+}
+
+async function generateDeepSeekTripPlan(options) {
+    const apiKey = process.env.DEEPSEEK_API_KEY;
+    const baseURL = process.env.DEEPSEEK_BASE_URL || "https://api.deepseek.com";
+    const model = process.env.AI_MODEL || "deepseek-v4-flash";
+
+    if (!apiKey) {
+        return createFallbackTripPlan(options, "当前未配置 DeepSeek API Key，已使用模拟推荐。");
+    }
+
+    const client = new OpenAI({
+        apiKey,
+        baseURL
+    });
+
+    try {
+        const response = await client.chat.completions.create({
+            model,
+            messages: [
+                {
+                    role: "system",
+                    content: [
+                        "你是福州城市文旅行程规划助手。",
+                        "请根据用户提供的游玩天数、兴趣偏好和旅行节奏，生成适合福州旅行的行程建议。",
+                        "必须只返回 JSON 对象，不要返回 Markdown，不要返回解释性文字。",
+                        "JSON 字段必须包含 title、summary、days、interest、pace、plan、tips、isMock。",
+                        "plan 必须是字符串数组，适合直接展示在网页中。",
+                        "isMock 必须为 false。"
+                    ].join("\n")
+                },
+                {
+                    role: "user",
+                    content: JSON.stringify({
+                        days: options.days,
+                        interest: options.interest,
+                        pace: options.pace,
+                        outputExample: {
+                            title: "福州一日游标题",
+                            summary: "简短总结",
+                            days: 1,
+                            interest: "美食",
+                            pace: "轻松",
+                            plan: [
+                                "上午：...",
+                                "中午：...",
+                                "下午：...",
+                                "晚上：..."
+                            ],
+                            tips: "...",
+                            isMock: false
+                        }
+                    })
+                }
+            ],
+            temperature: 0.7,
+            max_tokens: 800,
+            response_format: { type: "json_object" }
+        });
+
+        const content = response.choices && response.choices[0] && response.choices[0].message
+            ? response.choices[0].message.content
+            : "";
+
+        try {
+            const parsedPlan = JSON.parse(content);
+            return normalizeAiTripPlan(parsedPlan, options);
+        } catch (error) {
+            console.warn("DeepSeek trip plan JSON parse failed:", error.message);
+            return createFallbackTripPlan(options, "AI 返回格式异常，已使用模拟推荐。");
+        }
+    } catch (error) {
+        console.error("DeepSeek trip plan request failed:", error.message);
+        return createFallbackTripPlan(options, "DeepSeek 服务暂时不可用，已使用模拟推荐。");
+    }
+}
+
+async function generateTripPlan(options) {
+    const provider = process.env.AI_PROVIDER || "mock";
+
+    if (provider === "deepseek") {
+        return generateDeepSeekTripPlan(options);
+    }
+
+    return generateMockTripPlan(options);
+}
+
 module.exports = {
     generateTripPlan,
-    generateMockTripPlan
+    generateMockTripPlan,
+    generateDeepSeekTripPlan
 };
