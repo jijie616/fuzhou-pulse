@@ -13,6 +13,13 @@ const feedbackContentInput = document.getElementById("feedbackContent");
 const feedbackMessage = document.getElementById("feedbackMessage");
 const feedbackList = document.getElementById("feedbackList");
 const FEEDBACK_API_URL = "http://localhost:3000/api/feedbacks";
+const aiTripForm = document.getElementById("aiTripForm");
+const aiTripDaysSelect = document.getElementById("aiTripDays");
+const aiTripInterestSelect = document.getElementById("aiTripInterest");
+const aiTripPaceSelect = document.getElementById("aiTripPace");
+const aiTripMessage = document.getElementById("aiTripMessage");
+const aiTripResult = document.getElementById("aiTripResult");
+const AI_TRIP_API_URL = "http://localhost:3000/api/ai/trip-plan";
 const categoryFilters = [
     { label: "全部", value: "all" },
     { label: "历史古城", value: "history" },
@@ -269,6 +276,111 @@ async function submitFeedback(event) {
     } catch (error) {
         console.warn("Feedback submit failed.", error);
         setFeedbackMessage("留言服务暂时不可用，请稍后再试", "error");
+    }
+}
+
+function setAiTripMessage(message, type) {
+    if (!aiTripMessage) {
+        return;
+    }
+
+    aiTripMessage.textContent = message || "";
+    aiTripMessage.classList.remove("is-success", "is-error", "is-muted");
+
+    if (type) {
+        aiTripMessage.classList.add("is-" + type);
+    }
+}
+
+function renderAiTripPlan(planData) {
+    if (!aiTripResult) {
+        return;
+    }
+
+    aiTripResult.innerHTML = "";
+    if (!planData) {
+        showEmptyState(aiTripResult, "暂未生成行程推荐。");
+        return;
+    }
+
+    const card = document.createElement("article");
+    card.className = "ai-trip-card";
+
+    const meta = document.createElement("div");
+    meta.className = "ai-trip-card__meta";
+    meta.appendChild(createTextElement("span", "", (planData.days || 1) + " 天"));
+    meta.appendChild(createTextElement("span", "", planData.interest || "综合"));
+    meta.appendChild(createTextElement("span", "", planData.pace || "适中"));
+
+    const heading = document.createElement("div");
+    heading.className = "ai-trip-card__heading";
+    heading.appendChild(createTextElement("h3", "", planData.title || "福州行程推荐"));
+    if (planData.isMock === true) {
+        heading.appendChild(createTextElement("span", "ai-trip-badge", "模拟推荐"));
+    }
+
+    card.appendChild(heading);
+    card.appendChild(createTextElement("p", "ai-trip-summary", planData.summary || ""));
+    card.appendChild(meta);
+
+    const planList = document.createElement("ul");
+    planList.className = "ai-trip-plan-list";
+    const planItems = Array.isArray(planData.plan) ? planData.plan : [];
+    if (planItems.length === 0) {
+        const item = document.createElement("li");
+        item.textContent = "暂无具体路线建议";
+        planList.appendChild(item);
+    } else {
+        planItems.forEach(function (planItem) {
+            const item = document.createElement("li");
+            item.textContent = planItem;
+            planList.appendChild(item);
+        });
+    }
+    card.appendChild(planList);
+
+    const tips = document.createElement("p");
+    tips.className = "ai-trip-tips";
+    tips.appendChild(createTextElement("strong", "", "小提示："));
+    tips.appendChild(document.createTextNode(planData.tips || "建议根据天气、体力和开放时间灵活调整。"));
+    card.appendChild(tips);
+
+    aiTripResult.appendChild(card);
+}
+
+async function submitAiTripPlan(event) {
+    event.preventDefault();
+
+    const days = Number.parseInt(aiTripDaysSelect ? aiTripDaysSelect.value : "1", 10);
+    const interest = aiTripInterestSelect ? aiTripInterestSelect.value : "综合";
+    const pace = aiTripPaceSelect ? aiTripPaceSelect.value : "适中";
+
+    setAiTripMessage("正在生成福州行程推荐...", "muted");
+
+    try {
+        const response = await fetch(AI_TRIP_API_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                days,
+                interest,
+                pace
+            })
+        });
+        const result = await response.json();
+
+        if (!response.ok || !result.ok) {
+            setAiTripMessage(result.message || "AI 行程推荐生成失败", "error");
+            return;
+        }
+
+        renderAiTripPlan(result.data);
+        setAiTripMessage(result.data && result.data.isMock ? "当前为模拟 AI 推荐结果" : "行程推荐已生成", "success");
+    } catch (error) {
+        console.warn("AI trip plan service unavailable.", error);
+        setAiTripMessage("AI 行程推荐服务暂时不可用，请稍后再试", "error");
     }
 }
 
@@ -773,6 +885,10 @@ document.addEventListener("keydown", function (event) {
 });
 
 window.addEventListener("DOMContentLoaded", async function () {
+    if (aiTripForm) {
+        aiTripForm.addEventListener("submit", submitAiTripPlan);
+    }
+
     if (feedbackForm) {
         feedbackForm.addEventListener("submit", submitFeedback);
     }

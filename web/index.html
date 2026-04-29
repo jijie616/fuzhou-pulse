@@ -70,6 +70,52 @@
             <div class="route-grid" id="routePlansContainer"></div>
         </section>
 
+        <section class="ai-trip-section glass-panel" id="aiTripSection" aria-labelledby="aiTripSectionTitle">
+            <div class="section-heading ai-trip-heading">
+                <div>
+                    <p class="section-kicker">AI TRAVEL ASSISTANT</p>
+                    <h2 id="aiTripSectionTitle">AI 行程推荐</h2>
+                </div>
+                <p class="ai-trip-section__intro">输入你的旅行偏好，生成一份福州游玩建议。</p>
+            </div>
+
+            <form class="ai-trip-form" id="aiTripForm">
+                <label>
+                    游玩天数
+                    <select id="aiTripDays">
+                        <option value="1">1 天</option>
+                        <option value="2">2 天</option>
+                        <option value="3">3 天</option>
+                    </select>
+                </label>
+
+                <label>
+                    兴趣偏好
+                    <select id="aiTripInterest">
+                        <option value="综合">综合</option>
+                        <option value="历史">历史</option>
+                        <option value="美食">美食</option>
+                        <option value="文化">文化</option>
+                        <option value="自然">自然</option>
+                    </select>
+                </label>
+
+                <label>
+                    旅行节奏
+                    <select id="aiTripPace">
+                        <option value="轻松">轻松</option>
+                        <option value="适中" selected>适中</option>
+                        <option value="充实">充实</option>
+                    </select>
+                </label>
+
+                <button type="submit">生成推荐</button>
+            </form>
+
+            <p class="ai-trip-message" id="aiTripMessage"></p>
+            <div class="ai-trip-result" id="aiTripResult"></div>
+        </section>
+
         <section class="feedback-section glass-panel" id="feedbackSection" aria-labelledby="feedbackSectionTitle">
             <div class="section-heading feedback-heading">
                 <div>
