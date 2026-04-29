@@ -359,12 +359,26 @@ function renderAiTripPlan(planData) {
                 return;
             }
 
-            const relatedItem = document.createElement("article");
-            relatedItem.className = "ai-trip-related__item";
+            const relatedItem = document.createElement("button");
+            relatedItem.type = "button";
+            relatedItem.className = "ai-trip-related__item ai-related-place-button";
             relatedItem.appendChild(createTextElement("strong", "", place.title || "推荐地点"));
             if (place.reason) {
                 relatedItem.appendChild(createTextElement("span", "", place.reason));
             }
+            relatedItem.addEventListener("click", function () {
+                const cards = getFeaturedCards();
+                var matched = null;
+                if (place.id) {
+                    matched = cards.find(function (c) { return c.id === place.id; });
+                }
+                if (!matched && place.title) {
+                    matched = cards.find(function (c) { return c.title === place.title; });
+                }
+                if (matched && matched.id) {
+                    openDetailModal(matched.id);
+                }
+            });
             relatedList.appendChild(relatedItem);
         });
 

@@ -293,7 +293,7 @@ const featuredCards = [
         title: "金鸡山公园",
         subtitle: "栈道、林荫与城市天际线",
         description: "金鸡山公园有森林步道、观景平台和城市视野，是市区里很适合散步放松的绿色空间。它让福州的自然感变得触手可及。",
-        image: "./assets/images/fuzhou_cover.jpg",
+        image: "./assets/jinjishan.jpg",
         alt: "金鸡山公园森林步道",
         category: "culture",
         detail: {

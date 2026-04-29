@@ -1270,6 +1270,24 @@ img {
     line-height: 1.65;
 }
 
+.ai-related-place-button {
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
+    font-family: inherit;
+    width: 100%;
+}
+
+.ai-related-place-button:hover {
+    background: rgba(255, 255, 255, 0.85);
+    box-shadow: 0 2px 10px rgba(15, 159, 122, 0.10);
+    transform: translateY(-1px);
+}
+
+.ai-related-place-button:active {
+    transform: translateY(0);
+}
+
 .ai-trip-tips {
     margin: 16px 0 0;
     color: var(--wall-gray-soft);
