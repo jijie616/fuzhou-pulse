@@ -17,6 +17,7 @@ const aiTripForm = document.getElementById("aiTripForm");
 const aiTripDaysSelect = document.getElementById("aiTripDays");
 const aiTripInterestSelect = document.getElementById("aiTripInterest");
 const aiTripPaceSelect = document.getElementById("aiTripPace");
+const aiTripUserPreferenceInput = document.getElementById("aiTripUserPreference");
 const aiTripMessage = document.getElementById("aiTripMessage");
 const aiTripResult = document.getElementById("aiTripResult");
 const AI_TRIP_API_URL = "http://localhost:3000/api/ai/trip-plan";
@@ -321,6 +322,12 @@ function renderAiTripPlan(planData) {
 
     card.appendChild(heading);
     card.appendChild(createTextElement("p", "ai-trip-summary", planData.summary || ""));
+
+    const requestText = planData.requestSummary || planData.userPreference || "";
+    if (requestText) {
+        card.appendChild(createTextElement("p", "ai-trip-request", "你的补充需求：" + requestText));
+    }
+
     card.appendChild(meta);
 
     const planList = document.createElement("ul");
@@ -354,6 +361,12 @@ async function submitAiTripPlan(event) {
     const days = Number.parseInt(aiTripDaysSelect ? aiTripDaysSelect.value : "1", 10);
     const interest = aiTripInterestSelect ? aiTripInterestSelect.value : "综合";
     const pace = aiTripPaceSelect ? aiTripPaceSelect.value : "适中";
+    const userPreference = aiTripUserPreferenceInput ? aiTripUserPreferenceInput.value.trim() : "";
+
+    if (userPreference.length > 300) {
+        setAiTripMessage("补充需求不能超过 300 字", "error");
+        return;
+    }
 
     setAiTripMessage("正在生成福州行程推荐...", "muted");
 
@@ -366,7 +379,8 @@ async function submitAiTripPlan(event) {
             body: JSON.stringify({
                 days,
                 interest,
-                pace
+                pace,
+                userPreference
             })
         });
         const result = await response.json();

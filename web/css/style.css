@@ -1055,6 +1055,10 @@ img {
     -webkit-backdrop-filter: blur(18px);
 }
 
+.ai-trip-user-note {
+    grid-column: 1 / -1;
+}
+
 .ai-trip-form label {
     display: grid;
     gap: 8px;
@@ -1064,11 +1068,10 @@ img {
     font-weight: 800;
 }
 
-.ai-trip-form select {
+.ai-trip-form select,
+.ai-trip-form textarea {
     width: 100%;
-    min-height: 52px;
     min-width: 0;
-    padding: 0 14px;
     border: 1px solid rgba(255, 255, 255, 0.58);
     border-radius: 12px;
     background: rgba(255, 255, 255, 0.88);
@@ -1080,7 +1083,20 @@ img {
     transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 
-.ai-trip-form select:focus {
+.ai-trip-form select {
+    min-height: 52px;
+    padding: 0 14px;
+}
+
+.ai-trip-form textarea {
+    min-height: 96px;
+    padding: 14px;
+    resize: vertical;
+    line-height: 1.7;
+}
+
+.ai-trip-form select:focus,
+.ai-trip-form textarea:focus {
     border-color: rgba(15, 159, 122, 0.66);
     background: rgba(255, 255, 255, 0.96);
     box-shadow:
@@ -1172,6 +1188,16 @@ img {
     margin: 12px 0 0;
     color: var(--wall-gray-soft);
     line-height: 1.8;
+}
+
+.ai-trip-request {
+    margin: 12px 0 0;
+    padding: 12px 14px;
+    border-left: 4px solid rgba(15, 159, 122, 0.62);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.58);
+    color: var(--wall-gray-soft);
+    line-height: 1.75;
 }
 
 .ai-trip-card__meta {

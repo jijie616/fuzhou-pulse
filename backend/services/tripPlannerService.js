@@ -16,6 +16,7 @@ function generateMockTripPlan(options) {
     const days = options.days;
     const interest = options.interest;
     const pace = options.pace;
+    const userPreference = typeof options.userPreference === "string" ? options.userPreference.trim() : "";
     let title = "福州综合漫游行程";
     let summary = "结合古城街巷、闽江风物与福州味道，安排一条适合初次体验的城市路线。";
     let basePlan = [
@@ -56,13 +57,15 @@ function generateMockTripPlan(options) {
 
     return {
         title: title,
-        summary: summary + " 当前节奏偏好为“" + pace + "”。",
+        summary: summary + " 当前节奏偏好为“" + pace + "”。" + (userPreference ? " 已参考你的补充需求：" + userPreference : ""),
         days: days,
         interest: interest,
         pace: pace,
+        userPreference: userPreference,
+        requestSummary: userPreference ? "已参考你的补充需求：" + userPreference : "",
         isMock: true,
         plan: buildDailyPlan(days, basePlan),
-        tips: "当前为规则生成的模拟 AI 行程，后续可接入真实模型，让推荐更个性化。"
+        tips: "当前为规则生成的模拟 AI 行程，后续可接入真实模型，让推荐更个性化。" + (userPreference ? " 补充需求会作为路线松紧、拍照、美食和同行人安排的参考。" : "")
     };
 }
 
@@ -77,12 +80,16 @@ function createFallbackTripPlan(options, reason) {
 }
 
 function normalizeAiTripPlan(parsedPlan, options) {
+    const userPreference = typeof options.userPreference === "string" ? options.userPreference.trim() : "";
+
     return {
         title: parsedPlan.title || "福州 AI 行程推荐",
         summary: parsedPlan.summary || "根据你的偏好生成了一份福州行程建议。",
         days: Number(parsedPlan.days) || options.days,
         interest: parsedPlan.interest || options.interest,
         pace: parsedPlan.pace || options.pace,
+        userPreference: parsedPlan.userPreference || userPreference,
+        requestSummary: parsedPlan.requestSummary || (userPreference ? "已参考你的补充需求：" + userPreference : ""),
         plan: Array.isArray(parsedPlan.plan) ? parsedPlan.plan : [],
         tips: parsedPlan.tips || "建议根据当天交通、天气和体力情况灵活调整。",
         isMock: false
@@ -93,6 +100,7 @@ async function generateDeepSeekTripPlan(options) {
     const apiKey = process.env.DEEPSEEK_API_KEY;
     const baseURL = process.env.DEEPSEEK_BASE_URL || "https://api.deepseek.com";
     const model = process.env.AI_MODEL || "deepseek-v4-flash";
+    const userPreference = typeof options.userPreference === "string" ? options.userPreference.trim() : "";
 
     if (!apiKey) {
         return createFallbackTripPlan(options, "当前未配置 DeepSeek API Key，已使用模拟推荐。");
@@ -113,9 +121,12 @@ async function generateDeepSeekTripPlan(options) {
                         "你是福州城市文旅行程规划助手。",
                         "请根据用户提供的游玩天数、兴趣偏好和旅行节奏，生成适合福州旅行的行程建议。",
                         "必须只返回 JSON 对象，不要返回 Markdown，不要返回解释性文字。",
-                        "JSON 字段必须包含 title、summary、days、interest、pace、plan、tips、isMock。",
+                        "JSON 字段必须包含 title、summary、days、interest、pace、userPreference、requestSummary、plan、tips、isMock。",
                         "plan 必须是字符串数组，适合直接展示在网页中。",
-                        "isMock 必须为 false。"
+                        "isMock 必须为 false。",
+                        userPreference
+                            ? "用户提供了补充需求，必须优先考虑这段内容，并在 requestSummary 中用一句话概括。"
+                            : "用户没有提供补充需求，按 days、interest、pace 正常生成。"
                     ].join("\n")
                 },
                 {
@@ -124,12 +135,15 @@ async function generateDeepSeekTripPlan(options) {
                         days: options.days,
                         interest: options.interest,
                         pace: options.pace,
+                        userPreference: userPreference,
                         outputExample: {
                             title: "福州一日游标题",
                             summary: "简短总结",
                             days: 1,
                             interest: "美食",
                             pace: "轻松",
+                            userPreference: userPreference,
+                            requestSummary: "用户希望路线轻松，适合和父母同行。",
                             plan: [
                                 "上午：...",
                                 "中午：...",

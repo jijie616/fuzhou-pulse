@@ -95,6 +95,9 @@ app.post("/api/ai/trip-plan", async function (req, res) {
     const days = normalizeTripDays(body.days);
     const interest = String(body.interest || "").trim() || "综合";
     const pace = String(body.pace || "").trim() || "适中";
+    const userPreference = typeof body.userPreference === "string"
+        ? body.userPreference.trim()
+        : "";
 
     if (days > 3) {
         return res.status(400).json({
@@ -103,10 +106,18 @@ app.post("/api/ai/trip-plan", async function (req, res) {
         });
     }
 
+    if (userPreference.length > 300) {
+        return res.status(400).json({
+            ok: false,
+            message: "补充需求不能超过 300 字"
+        });
+    }
+
     const tripPlan = await generateTripPlan({
         days,
         interest,
-        pace
+        pace,
+        userPreference
     });
 
     return res.json({
