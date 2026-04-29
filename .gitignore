@@ -25,6 +25,8 @@ cloudflared_stderr.txt
 
 # runtime data
 web/count.txt
+.env
+backend/.env
 
 # system files
 .DS_Store

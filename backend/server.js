@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 const express = require("express");
 const cors = require("cors");
 const featuredCards = require("./data/featuredCards");
@@ -5,7 +7,7 @@ const routePlans = require("./data/routePlans");
 const { readFeedbacks, addFeedback } = require("./data/feedbacks");
 
 const app = express();
-const port = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
@@ -78,6 +80,6 @@ app.post("/api/feedbacks", function (req, res) {
     });
 });
 
-app.listen(port, function () {
-    console.log("Fuzhou Pulse backend running at http://localhost:" + port);
+app.listen(PORT, function () {
+    console.log(`Fuzhou Pulse backend running at http://localhost:${PORT}`);
 });
