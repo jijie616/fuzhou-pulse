@@ -140,7 +140,7 @@ const featuredCards = [
         title: "乌山",
         subtitle: "榕城三山之一的摩崖记忆",
         description: "乌山与于山、屏山并称榕城三山，山不高却层层藏景。摩崖石刻、古榕老树与城市街巷相互映照，适合用一段轻松步行感受福州老城的山水气质。",
-        image: "./assets/images/fuzhou_cover.jpg",
+        image: "./assets/wushan.jpg",
         category: "history",
         detail: {
             bestTime: "建议游玩 1-2 小时",
@@ -155,7 +155,7 @@ const featuredCards = [
         title: "福建博物院",
         subtitle: "从海丝到闽越的文化窗口",
         description: "福建博物院用展陈讲述八闽大地的历史、海洋文化与民俗记忆。它适合在慢节奏旅行中安排半天，帮助游客把福州放进更广阔的福建文化脉络里理解。",
-        image: "./assets/images/fuzhou_cover.jpg",
+        image: "./assets/fujianbowuyuan.png",
         category: "history",
         detail: {
             bestTime: "建议游玩 2-3 小时",
@@ -170,7 +170,7 @@ const featuredCards = [
         title: "西禅寺",
         subtitle: "城西古刹里的清静片刻",
         description: "西禅寺是福州著名古寺之一，寺院空间开阔，香火与园林气息相融。相比热闹商圈，这里更适合放慢脚步，体验福州城市中的清静一面。",
-        image: "./assets/images/fuzhou_cover.jpg",
+        image: "./assets/xichansi.jpg",
         category: "history",
         detail: {
             bestTime: "建议游玩 1-2 小时",
@@ -185,7 +185,7 @@ const featuredCards = [
         title: "马尾船政文化景区",
         subtitle: "近代工业与海军记忆的起点",
         description: "马尾船政文化景区记录了中国近代船政、海军教育与工业启蒙的重要篇章。它让福州不只是一座古城，也是一座面向海洋、拥抱现代化的城市。",
-        image: "./assets/images/fuzhou_cover.jpg",
+        image: "./assets/mawei.jpg",
         category: "culture",
         detail: {
             bestTime: "建议游玩 2-3 小时",
@@ -200,7 +200,7 @@ const featuredCards = [
         title: "闽江夜游",
         subtitle: "从水面看见福州灯火",
         description: "闽江夜游把桥梁、江岸、灯光和城市天际线串联起来。坐在船上看两岸灯火铺开，能感受到福州温柔而现代的一面。",
-        image: "./assets/images/fuzhou_cover.jpg",
+        image: "./assets/mingjiang.jpg",
         category: "culture",
         detail: {
             bestTime: "建议傍晚至夜间体验",
@@ -215,7 +215,7 @@ const featuredCards = [
         title: "福道",
         subtitle: "把城市和山林连在一起",
         description: "福道穿行在城市山体和森林之间，用高架步道连接公园、山林与城市视野。这里适合轻徒步、拍照和呼吸绿色空气，是福州自然休闲的代表体验。",
-        image: "./assets/images/fuzhou_cover.jpg",
+        image: "./assets/fudao.jpg",
         category: "culture",
         detail: {
             bestTime: "建议游玩 1.5-3 小时",
@@ -230,7 +230,7 @@ const featuredCards = [
         title: "西湖公园",
         subtitle: "福州人散步赏景的日常湖面",
         description: "西湖公园历史悠久，湖面、亭桥、榕荫和周边文化设施构成了温和的城市风景。这里不追求刺激，却很能体现福州生活的松弛感。",
-        image: "./assets/images/fuzhou_cover.jpg",
+        image: "./assets/xihu.jpg",
         category: "culture",
         detail: {
             bestTime: "建议游玩 1-2 小时",
@@ -245,7 +245,7 @@ const featuredCards = [
         title: "鼓山",
         subtitle: "从山海之间眺望榕城",
         description: "鼓山是福州经典登高目的地，山路、古寺、摩崖石刻和城市远景都很有代表性。想看福州的山水格局，鼓山是很稳妥的一站。",
-        image: "./assets/images/fuzhou_cover.jpg",
+        image: "./assets/gushan.jpg",
         category: "culture",
         detail: {
             bestTime: "建议游玩半天",
@@ -275,7 +275,7 @@ const featuredCards = [
         title: "达明美食街",
         subtitle: "把福州夜晚吃得热闹一点",
         description: "达明美食街聚集了许多小吃、夜宵和年轻人喜欢的街头味道。它不一定最传统，却很能代表福州夜晚的热闹和松弛。",
-        image: "./assets/images/fuzhou_cover.jpg",
+        image: "./assets/daming.jpg",
         category: "food",
         detail: {
             bestTime: "适合傍晚到夜间",
@@ -290,7 +290,7 @@ const featuredCards = [
         title: "老福州小吃",
         subtitle: "锅边、芋泥和拌面的日常味道",
         description: "老福州小吃不只是一道菜，而是一组城市味觉记忆。锅边、芋泥、拌面、花生汤等共同构成了福州人从早到晚的温柔日常。",
-        image: "./assets/images/fuzhou_cover.jpg",
+        image: "./assets/fuzhouxiaochi.jpg",
         category: "food",
         detail: {
             bestTime: "适合早餐、下午茶或夜宵",
@@ -305,7 +305,7 @@ const featuredCards = [
         title: "茉莉花茶体验",
         subtitle: "一盏茶里的榕城气息",
         description: "福州茉莉花茶以茶香与花香交融著称，是福州很有辨识度的城市味道。通过闻香、冲泡和品饮，可以感受这座城市温润细致的一面。",
-        image: "./assets/images/fuzhou_cover.jpg",
+        image: "./assets/molihua.jpg",
         category: "food",
         detail: {
             bestTime: "适合下午或雨天慢体验",
