@@ -56,6 +56,43 @@ app.get("/api/feedbacks", function (req, res) {
     });
 });
 
+app.get("/api/status", function (req, res) {
+    let feedbacksCount = 0;
+    let warning = null;
+
+    try {
+        feedbacksCount = readFeedbacks().length;
+    } catch (error) {
+        warning = "Failed to read feedbacks count.";
+        feedbacksCount = 0;
+    }
+
+    const status = {
+        ok: true,
+        name: "Fuzhou Pulse",
+        version: "v2.0-beta",
+        environment: process.env.NODE_ENV || "development",
+        timestamp: new Date().toISOString(),
+        uptime: process.uptime(),
+        cardsCount: featuredCards.length,
+        routesCount: routePlans.length,
+        feedbacksCount,
+        aiProvider: process.env.AI_PROVIDER || "mock",
+        aiModel: process.env.AI_MODEL || "mock-trip-planner",
+        hasDeepSeekKey: Boolean(process.env.DEEPSEEK_API_KEY),
+        render: {
+            service: process.env.RENDER_SERVICE_NAME || null,
+            externalUrl: process.env.RENDER_EXTERNAL_URL || null
+        }
+    };
+
+    if (warning) {
+        status.warning = warning;
+    }
+
+    res.json(status);
+});
+
 app.post("/api/feedbacks", function (req, res) {
     const body = req.body || {};
     const nickname = String(body.nickname || "").trim() || "游客";
