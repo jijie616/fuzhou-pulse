@@ -34,6 +34,9 @@ function renderDetailModal(contentEl, card) {
   img.className = "detail-card__image";
   img.src = card.image || "";
   img.alt = card.alt || card.title || "";
+  img.loading = "lazy";
+  img.width = 800;
+  img.height = 600;
 
   const content = document.createElement("div");
   content.className = "detail-card__content";

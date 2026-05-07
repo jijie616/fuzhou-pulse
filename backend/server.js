@@ -1,4 +1,8 @@
+const { migrateFromJson, seedAdminUser } = require("./data/db");
 const app = require("./app");
+
+migrateFromJson();
+seedAdminUser();
 
 const PORT = process.env.PORT || 3000;
 

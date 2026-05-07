@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fuzhou Pulse | 管理后台</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./css/admin.css">
+</head>
+<body>
+  <div id="loginSection" class="login-container">
+    <div class="admin-card">
+      <h1 class="admin-title">Fuzhou Pulse</h1>
+      <p class="admin-subtitle">管理后台登录</p>
+      <form id="loginForm" class="login-form">
+        <label for="adminUsername">用户名</label>
+        <input id="adminUsername" type="text" placeholder="请输入用户名" autocomplete="username" required>
+        <label for="adminPassword">密码</label>
+        <input id="adminPassword" type="password" placeholder="请输入密码" autocomplete="current-password" required>
+        <button type="submit" class="primary-button">登录</button>
+        <p id="loginMessage" class="form-message"></p>
+      </form>
+    </div>
+  </div>
+
+  <div id="dashboardSection" class="dashboard" style="display:none;">
+    <header class="admin-header">
+      <h1>Fuzhou Pulse 管理后台</h1>
+      <div class="admin-header-actions">
+        <span id="adminUser" class="admin-user"></span>
+        <button id="logoutButton" class="secondary-button">退出登录</button>
+      </div>
+    </header>
+
+    <section class="stats-grid" id="statsGrid">
+      <div class="stat-card">
+        <span class="stat-label">总留言数</span>
+        <strong class="stat-value" id="statTotal">--</strong>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">活跃留言</span>
+        <strong class="stat-value" id="statActive">--</strong>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">已删除</span>
+        <strong class="stat-value" id="statDeleted">--</strong>
+      </div>
+    </section>
+
+    <section class="recent-section">
+      <h2>最近留言</h2>
+      <div id="recentList"></div>
+    </section>
+
+    <section class="feedbacks-section">
+      <h2>全部留言</h2>
+      <div id="feedbackTableContainer"></div>
+    </section>
+  </div>
+
+  <script type="module" src="./js/admin.js"></script>
+</body>
+</html>

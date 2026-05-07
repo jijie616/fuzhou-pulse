@@ -80,6 +80,9 @@ function renderFeaturedCards(cardsToRender, emptyMessage, openDetailFn) {
     const img = document.createElement("img");
     img.src = card.image || "";
     img.alt = card.alt || card.title || "";
+    img.loading = "lazy";
+    img.width = 400;
+    img.height = 300;
     media.appendChild(img);
 
     const copy = document.createElement("div");
@@ -223,6 +226,9 @@ export function renderIdentityCards() {
     const img = document.createElement("img");
     img.src = card.image || "";
     img.alt = card.alt || card.title || "";
+    img.loading = "lazy";
+    img.width = 600;
+    img.height = 400;
     imageWrap.appendChild(img);
 
     const copy = document.createElement("div");

@@ -8,8 +8,12 @@ const morgan = require("morgan");
 const rateLimit = require("express-rate-limit");
 const featuredCards = require("./data/featuredCards");
 const routePlans = require("./data/routePlans");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 const { readFeedbacks, addFeedback } = require("./data/feedbacks");
 const { generateTripPlan } = require("./services/tripPlannerService");
+const { getDb } = require("./data/db");
+const { authMiddleware, JWT_SECRET, JWT_EXPIRY } = require("./middleware/auth");
 
 const app = express();
 
@@ -139,6 +143,118 @@ app.post("/api/ai/trip-plan", aiTripLimiter, async function (req, res) {
 
   const tripPlan = await generateTripPlan({ days, interest, pace, userPreference });
   return res.json({ ok: true, message: "已生成福州行程推荐", data: tripPlan });
+});
+
+// --- Auth routes ---
+app.post("/api/auth/register", async function (req, res) {
+  const body = req.body || {};
+  const username = String(body.username || "").trim();
+  const password = String(body.password || "");
+
+  if (username.length < 3 || username.length > 30) {
+    return res.status(400).json({ ok: false, message: "用户名需 3-30 个字符" });
+  }
+  if (password.length < 6 || password.length > 100) {
+    return res.status(400).json({ ok: false, message: "密码需 6-100 个字符" });
+  }
+
+  const db = getDb();
+  const existing = db.prepare("SELECT id FROM users WHERE username = ?").get(username);
+  if (existing) {
+    return res.status(409).json({ ok: false, message: "用户名已存在" });
+  }
+
+  const hash = bcrypt.hashSync(password, 10);
+  const result = db.prepare(
+    "INSERT INTO users (username, password, role, createdAt) VALUES (?, ?, ?, ?)"
+  ).run(username, hash, "user", new Date().toISOString());
+
+  const token = jwt.sign(
+    { id: result.lastInsertRowid, username, role: "user" },
+    JWT_SECRET,
+    { expiresIn: JWT_EXPIRY }
+  );
+
+  return res.status(201).json({
+    ok: true,
+    message: "注册成功",
+    data: { id: result.lastInsertRowid, username, role: "user", token }
+  });
+});
+
+app.post("/api/auth/login", async function (req, res) {
+  const body = req.body || {};
+  const username = String(body.username || "").trim();
+  const password = String(body.password || "");
+
+  if (!username || !password) {
+    return res.status(400).json({ ok: false, message: "用户名和密码不能为空" });
+  }
+
+  const db = getDb();
+  const user = db.prepare("SELECT id, username, password, role FROM users WHERE username = ?").get(username);
+  if (!user) {
+    return res.status(401).json({ ok: false, message: "用户名或密码错误" });
+  }
+
+  const valid = bcrypt.compareSync(password, user.password);
+  if (!valid) {
+    return res.status(401).json({ ok: false, message: "用户名或密码错误" });
+  }
+
+  const token = jwt.sign(
+    { id: user.id, username: user.username, role: user.role },
+    JWT_SECRET,
+    { expiresIn: JWT_EXPIRY }
+  );
+
+  return res.json({
+    ok: true,
+    message: "登录成功",
+    data: { id: user.id, username: user.username, role: user.role, token }
+  });
+});
+
+// --- Admin routes (protected) ---
+app.get("/api/admin/feedbacks", authMiddleware, function (req, res) {
+  const db = getDb();
+  const rows = db.prepare(
+    "SELECT id, nickname, content, createdAt, deleted FROM feedbacks ORDER BY id DESC"
+  ).all();
+  res.json({ ok: true, count: rows.length, data: rows });
+});
+
+app.delete("/api/admin/feedbacks/:id", authMiddleware, function (req, res) {
+  const id = Number(req.params.id);
+  if (!Number.isFinite(id)) {
+    return res.status(400).json({ ok: false, message: "无效的留言 ID" });
+  }
+  const db = getDb();
+  const result = db.prepare("UPDATE feedbacks SET deleted = 1 WHERE id = ?").run(id);
+  if (result.changes === 0) {
+    return res.status(404).json({ ok: false, message: "留言不存在" });
+  }
+  res.json({ ok: true, message: "留言已删除" });
+});
+
+app.get("/api/admin/stats", authMiddleware, function (req, res) {
+  const db = getDb();
+  const total = db.prepare("SELECT COUNT(*) as count FROM feedbacks").get();
+  const active = db.prepare("SELECT COUNT(*) as count FROM feedbacks WHERE deleted = 0").get();
+  const deleted = db.prepare("SELECT COUNT(*) as count FROM feedbacks WHERE deleted = 1").get();
+  const recent = db.prepare(
+    "SELECT id, nickname, content, createdAt FROM feedbacks WHERE deleted = 0 ORDER BY id DESC LIMIT 5"
+  ).all();
+
+  res.json({
+    ok: true,
+    data: {
+      totalFeedbacks: total.count,
+      activeFeedbacks: active.count,
+      deletedFeedbacks: deleted.count,
+      recentFeedbacks: recent
+    }
+  });
 });
 
 // --- Static files ---

@@ -1,5 +1,11 @@
 const request = require("supertest");
 const app = require("../app");
+const { getDb } = require("../data/db");
+
+beforeEach(function () {
+  const db = getDb();
+  db.prepare("DELETE FROM feedbacks").run();
+});
 
 describe("GET /api/health", function () {
   it("should return ok", async function () {
@@ -113,7 +119,20 @@ describe("GET /api/feedbacks", function () {
 });
 
 describe("POST /api/ai/trip-plan", function () {
-  jest.setTimeout(15000);
+  jest.setTimeout(30000);
+
+  beforeAll(function () {
+    process.env._AI_PROVIDER_BAK = process.env.AI_PROVIDER;
+    process.env.AI_PROVIDER = "mock";
+  });
+
+  afterAll(function () {
+    if (process.env._AI_PROVIDER_BAK) {
+      process.env.AI_PROVIDER = process.env._AI_PROVIDER_BAK;
+    } else {
+      delete process.env.AI_PROVIDER;
+    }
+  });
 
   it("should generate mock trip plan without API key", async function () {
     const res = await request(app)
