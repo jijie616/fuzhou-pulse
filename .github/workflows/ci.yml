@@ -7,7 +7,7 @@ on:
     branches: [master, main, dev-v2]
 
 jobs:
-  test:
+  backend-test:
     runs-on: ubuntu-latest
 
     defaults:
@@ -31,3 +31,34 @@ jobs:
         run: npm test
         env:
           NODE_ENV: test
+
+      - name: Validate JS syntax
+        run: npm run lint
+
+  frontend-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate HTML
+        run: |
+          for f in web/index.html docs/index.html; do
+            if [ -f "$f" ]; then
+              echo "Checking $f ..."
+              node -e "
+                const fs = require('fs');
+                const html = fs.readFileSync('$f', 'utf8');
+                if (!html.includes('<!DOCTYPE html>')) { console.error('$f: missing DOCTYPE'); process.exit(1); }
+                if (!html.includes('</html>')) { console.error('$f: missing closing html tag'); process.exit(1); }
+                console.log('$f: OK');
+              "
+            fi
+          done
+
+      - name: Validate JS syntax
+        run: |
+          echo "Checking frontend JS modules..."
+          for f in web/js/*.js; do
+            node --check "$f" && echo "$f: OK" || exit 1
+          done

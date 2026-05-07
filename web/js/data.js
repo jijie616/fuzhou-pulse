@@ -1,3 +1,8 @@
+/**
+ * LOCAL FALLBACK DATA — canonical source is backend/data/featuredCards.js.
+ * This file is used only when the backend API is unreachable.
+ * When updating cards, always update the backend file first.
+ */
 export const siteInfo = {
     brand: "FUZHOU PULSE",
     title: "有福之州，幸福之城",

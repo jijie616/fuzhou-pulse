@@ -1,3 +1,7 @@
+/**
+ * CANONICAL DATA SOURCE for featured cards.
+ * The frontend local copy (web/js/data.js) is a fallback — update this file first.
+ */
 const featuredCards = [
     {
         id: "sanfang",

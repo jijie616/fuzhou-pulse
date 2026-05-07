@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
-    "test": "jest --verbose --forceExit"
+    "test": "jest --verbose --forceExit",
+    "lint": "node -e \"var fs=require('fs');['server.js','app.js','data/featuredCards.js','data/routePlans.js','data/feedbacks.js','services/tripPlannerService.js','services/tripPlanPrompt.js'].forEach(function(f){try{require('child_process').execSync('node --check '+f,{cwd:__dirname,stdio:'pipe'});console.log(f+': OK');}catch(e){console.error(f+': FAIL');process.exitCode=1;}});\""
   },
   "keywords": [],
   "author": "",

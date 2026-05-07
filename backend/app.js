@@ -90,19 +90,12 @@ app.get("/api/status", function (req, res) {
     ok: true,
     name: "Fuzhou Pulse",
     version: "v2.0-beta",
-    environment: process.env.NODE_ENV || "development",
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
     cardsCount: featuredCards.length,
     routesCount: routePlans.length,
     feedbacksCount,
     aiProvider: process.env.AI_PROVIDER || "mock",
-    aiModel: process.env.AI_MODEL || "mock-trip-planner",
-    hasDeepSeekKey: Boolean(process.env.DEEPSEEK_API_KEY),
-    render: {
-      service: process.env.RENDER_SERVICE_NAME || null,
-      externalUrl: process.env.RENDER_EXTERNAL_URL || null
-    },
     ...(warning ? { warning } : {})
   });
 });

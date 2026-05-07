@@ -118,8 +118,8 @@ window.addEventListener("DOMContentLoaded", async function () {
     loadRoutePlansFromBackend()
   ]);
 
-  if (cardsResult.ok) setActiveCards(cardsResult.data);
-  if (routesResult.ok) setActiveRoutes(routesResult.data);
+  if (cardsResult.ok) { setActiveCards(cardsResult.data); } else { console.warn("Using local fallback data for cards (backend unavailable)."); }
+  if (routesResult.ok) { setActiveRoutes(routesResult.data); } else { console.warn("Using local fallback data for routes (backend unavailable)."); }
 
   // Render
   renderFilterButtons(function (cardId) {

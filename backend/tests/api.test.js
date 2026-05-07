@@ -60,7 +60,7 @@ describe("GET /api/status", function () {
     expect(res.body).toHaveProperty("cardsCount");
     expect(res.body).toHaveProperty("routesCount");
     expect(res.body).toHaveProperty("feedbacksCount");
-    expect(res.body).toHaveProperty("hasDeepSeekKey");
+    expect(res.body).toHaveProperty("aiProvider");
     expect(res.body).toHaveProperty("uptime");
   });
 });
